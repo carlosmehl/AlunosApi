@@ -1,6 +1,7 @@
 ﻿using AlunosApi.Context;
 using AlunosApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 
 namespace AlunosApi.Services
 {
@@ -15,39 +16,52 @@ namespace AlunosApi.Services
 
         public async Task CreateAluno(Aluno aluno)
         {
-            throw new NotImplementedException();
+            _context.Alunos.Add(aluno);
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAluno(Aluno aluno)
         {
-            throw new NotImplementedException();
+            _context.Entry(aluno).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Aluno>> GetAluno(int id)
+        public async Task<Aluno> GetAluno(int id)
+        {
+            var aluno = await _context.Alunos.FindAsync(id);
+            return aluno;
+        }
+
+        public async Task<IEnumerable<Aluno>> GetAlunos()
         {
             try
             {
                 return await _context.Alunos.ToListAsync();
             }
-            catch (Exception)
+            catch
             {
                 throw;
             }
         }
 
-        public async Task<IEnumerable<Aluno>> GetAlunos()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<Aluno>> GetAlunosByNome(string nome)
         {
-            throw new NotImplementedException();
+            IEnumerable<Aluno> alunos;
+            if (!string.IsNullOrWhiteSpace(nome))
+            {
+                alunos = await _context.Alunos.Where(n => n.Nome.Contains(nome)).ToListAsync();
+            }
+            else
+            {
+                alunos = await GetAlunos();
+            }
+            return alunos;
         }
 
         public async Task UpdateAluno(Aluno aluno)
         {
-            throw new NotImplementedException();
+            _context.Entry(aluno).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }
