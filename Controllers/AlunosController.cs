@@ -27,7 +27,7 @@ namespace AlunosApi.Controllers
             }
             catch
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,"Erro ao obter Alunos.");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao obter Alunos.");
             }
         }
 
@@ -50,7 +50,7 @@ namespace AlunosApi.Controllers
             }
         }
 
-        [HttpGet("{id:int}", Name="GetAluno")]
+        [HttpGet("{id:int}", Name = "GetAluno")]
         public async Task<ActionResult<Aluno>> GetAluno(int id)
         {
             try
@@ -66,6 +66,64 @@ namespace AlunosApi.Controllers
             catch
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro ao obter Aluno.");
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> Create(Aluno aluno)
+        {
+            try
+            {
+                await _alunoService.CreateAluno(aluno);
+
+                return CreatedAtRoute(nameof(GetAluno), new { id = aluno.Id}, aluno);
+            }
+            catch 
+            {
+                return BadRequest("Request Inválido");
+            }
+        }
+
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> Edit(int id, [FromBody]Aluno aluno)
+        {
+            try
+            {
+                if(aluno.Id == id)
+                {
+                    await _alunoService.UpdateAluno(aluno);
+                    return NoContent();
+                }
+                else
+                {
+                    return BadRequest("Dados Inconsistentes");
+                }
+            }
+            catch
+            {
+                return BadRequest("Request Inválido");
+            }
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                var aluno = await _alunoService.GetAluno(id);
+                if(aluno != null)
+                {
+                    await _alunoService.DeleteAluno(aluno);
+                    return Ok($"Aluno de Id = {id} foi excluido com sucesso");
+                }
+                else
+                {
+                    return NotFound ($"Aluno de Id = {id} não encontrado");
+                }
+            }
+            catch
+            {
+                return BadRequest("Request Inválido");
             }
         }
 
