@@ -13,6 +13,7 @@ function App() {
   const baseUrl="https://localhost:7037/api/Alunos";
   const [data, setData]=useState([]);
   const [modalIncluir,setModalIncluir]=useState(false);
+  const [modalEditar,setModalEditar]=useState(false);
 
 
   const [alunoSelecionado,setAlunoSelecionado]=useState({
@@ -22,8 +23,18 @@ function App() {
     idade: ''
   });
 
+  const selecionarAluno = (aluno, opcao) => {
+    setAlunoSelecionado(aluno);
+    (opcao === "Editar") &&
+      abrirFecharModalEditar()
+  }
+
   const abrirFecharModalIncluir=()=>{
     setModalIncluir(!modalIncluir);
+  }
+
+  const abrirFecharModalEditar=()=>{
+    setModalEditar(!modalEditar);
   }
 
   const handleChange = e =>{
@@ -84,8 +95,8 @@ function App() {
               <td>{aluno.email}</td>
               <td>{aluno.idade}</td>
               <td>
-                <button className="btn btn-primary">Editar</button> {"  "}
-                <button className="btn btn-danger">Excluir</button>
+                <button className="btn btn-primary" onClick={()=>selecionarAluno(aluno, "Editar")}>Editar</button> {"  "}
+                <button className="btn btn-danger" onClick={()=>selecionarAluno(aluno, "Excluir")}>Excluir</button>
               </td>
             </tr>
           ))}
@@ -112,6 +123,32 @@ function App() {
       <ModalFooter>
         <button className="btn btn-primary" onClick={()=>pedidoPost()}>Incluir</button>{" "}
         <button className="btn btn-danger" onClick={()=>abrirFecharModalIncluir()}>Cancelar</button>
+      </ModalFooter>
+      </Modal>
+      
+      <Modal isOpen={modalEditar}>
+      <ModalHeader>Editar Aluno</ModalHeader>
+      <ModalBody>
+        <div className="form-group">
+          <label>ID: </label>
+          <br readyOnly value={alunoSelecionado && alunoSelecionado.id}/>
+          <br />
+          <label>Nome: </label>
+          <br />
+          <input type="text" className="form-control" name="nome" onChange={handleChange}/>
+          <br />
+          <label>Email: </label>
+          <br />
+          <input type="text" className="form-control" name="email" onChange={handleChange}/>
+          <label>Idade:</label>
+          <br />
+          <input type="text" className="form-control" name="idade" onChange={handleChange}/>
+          <br />
+        </div>
+      </ModalBody>
+      <ModalFooter>
+        <button className="btn btn-primary" >Editar</button>{" "}
+        <button className="btn btn-danger" onClick={()=>abrirFecharModalEditar()}>Cancelar</button>
       </ModalFooter>
       </Modal>
     </div>
